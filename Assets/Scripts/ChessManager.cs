@@ -21,7 +21,7 @@ public class ChessManager : MonoBehaviour
     private ChessPlace[] _ChessPlaces = new ChessPlace[64];
     private ChessPlace _HoveredChessPlace;
     private ChessPlace _SelectedChessPlace;
-
+    public Transform _CameraAnchor;
     List<ChessPlace> moves = new List<ChessPlace>();
     private void Start()
     {
@@ -183,6 +183,21 @@ public class ChessManager : MonoBehaviour
                 {
                     place._PieceOnPlace._Team = Team.White;
                 }                
+            }
+            float timeStarted = Time.time;
+            float TimeToTake = 0.2f;
+            if (place._PieceOnPlace != null)
+            {
+                Vector3 originalPos = place._PieceOnPlace.transform.position;
+                place._PieceOnPlace.transform.position = place._PieceOnPlace.transform.position + (Vector3.up * 10);
+                while (place._PieceOnPlace.transform.position != (originalPos))
+                {
+                    float timeSinceStarted = Time.time - timeStarted;
+                    float percentageComplete = timeSinceStarted / TimeToTake;
+                    place._PieceOnPlace.transform.position = new Vector3(place._PieceOnPlace.transform.position.x, Mathf.SmoothStep(place._PieceOnPlace.transform.position.y, originalPos.y, percentageComplete), place._PieceOnPlace.transform.position.z);
+
+                    yield return new WaitForFixedUpdate();
+                }
             }
         }
         yield return null;
@@ -425,6 +440,24 @@ public class ChessManager : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         isPaused = false;
+        StartCoroutine(SwitchCameraPosition());
+        yield return null;
+    }
+    IEnumerator SwitchCameraPosition()
+    {
+        float timeStarted = Time.time;
+        float TimeToTake = 1.5f;
+
+        Vector3 targetAngle = _CameraAnchor.eulerAngles + 180 * Vector3.up;
+        while (_CameraAnchor.rotation != Quaternion.Euler(targetAngle))
+        {
+            float timeSinceStarted = Time.time - timeStarted;
+            float percentageComplete = timeSinceStarted / TimeToTake;
+
+            _CameraAnchor.rotation = Quaternion.Lerp(_CameraAnchor.rotation, Quaternion.Euler(targetAngle), percentageComplete);
+            yield return new WaitForFixedUpdate();
+        }
+        
         yield return null;
     }
 }
