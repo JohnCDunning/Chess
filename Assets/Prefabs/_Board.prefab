@@ -58,7 +58,6 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -83,7 +82,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &6039468267777526803
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -110,10 +108,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CurrentPiece: 0
-  _ObjectOnThisPlace: {fileID: 0}
+  _PieceOnPlace: {fileID: 0}
   _Spot: {x: 0, y: 0}
   _SelectedMat: {fileID: 2100000, guid: c1e82416aa201294abcb0c98f263c55f, type: 2}
   _HoverMat: {fileID: 2100000, guid: 07199b31c2ea8fe4dac743963e1260f0, type: 2}
+  isPaused: 0
+  _State: 0
 --- !u!95 &8281759589825071484
 Animator:
   serializedVersion: 3

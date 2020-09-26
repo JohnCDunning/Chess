@@ -416,25 +416,25 @@ public class ChessManager : MonoBehaviour
         StartCoroutine(MoveObject(_Piece, _Piece.transform.position, Position, 0.5f));
         yield return new WaitForSeconds(0.5f);        
         StartCoroutine(SwitchCameraPosition());
-        
+        isPaused = false;
         yield return null;
     }
     IEnumerator SwitchCameraPosition()
     {
         float timeStarted = Time.time;
-        float TimeToTake = 1.5f;
+        float TimeToTake = 3f;
+        float percentageComplete = 0;
 
         Vector3 targetAngle = _CameraAnchor.eulerAngles + 180 * Vector3.up;
-        while (_CameraAnchor.rotation != Quaternion.Euler(targetAngle))
+        while (percentageComplete < 1)
         {
             float timeSinceStarted = Time.time - timeStarted;
-            float percentageComplete = timeSinceStarted / TimeToTake;
+            percentageComplete = timeSinceStarted / TimeToTake;
 
-            _CameraAnchor.rotation = Quaternion.RotateTowards(_CameraAnchor.rotation, Quaternion.Euler(targetAngle), 7.5f * percentageComplete);
+            _CameraAnchor.rotation = Quaternion.Lerp(_CameraAnchor.rotation, Quaternion.Euler(targetAngle),percentageComplete);
             Debug.Log(percentageComplete);
             yield return new WaitForFixedUpdate();
-        }
-        isPaused = false;
+        }        
         yield return null;
     }
     IEnumerator MoveObject(GameObject objectToMove, Vector3 startPosition,Vector3 endPosition,float timeToTake)
