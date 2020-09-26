@@ -185,7 +185,7 @@ public class ChessManager : MonoBehaviour
                 }                
             }
             float timeStarted = Time.time;
-            float TimeToTake = 0.2f;
+            float TimeToTake = 0.01f;
             if (place._PieceOnPlace != null)
             {
                 Vector3 originalPos = place._PieceOnPlace.transform.position;
@@ -408,39 +408,15 @@ public class ChessManager : MonoBehaviour
 
     IEnumerator MovePiece(GameObject _Piece, Vector3 Position)
     {
-        float timeStarted = Time.time;
-        float TimeToTake = 0.5f;
         isPaused = true;
-        Vector3 originalPos = _Piece.transform.position;
-        
-        while (_Piece.transform.position.y <= (originalPos.y + 1))
-        {
-            float timeSinceStarted = Time.time - timeStarted;
-            float percentageComplete = timeSinceStarted / TimeToTake;
-            _Piece.transform.position = new Vector3(_Piece.transform.position.x, Mathf.SmoothStep(_Piece.transform.position.y, originalPos.y + 1f, percentageComplete), _Piece.transform.position.z);
-        
-            yield return new WaitForFixedUpdate();
-        }
-        timeStarted = Time.time;
-        TimeToTake = 1f;
-        while (_Piece.transform.position != new Vector3(Position.x, _Piece.transform.position.y, Position.z))
-        {
-            float timeSinceStarted = Time.time - timeStarted;
-            float percentageComplete = timeSinceStarted / TimeToTake;
-            _Piece.transform.position = new Vector3(Mathf.SmoothStep(_Piece.transform.position.x, Position.x, percentageComplete), _Piece.transform.position.y, Mathf.SmoothStep(_Piece.transform.position.z, Position.z, percentageComplete));
-            yield return new WaitForFixedUpdate();
-        }
-        timeStarted = Time.time;
-        TimeToTake = 0.5f;
-        while (_Piece.transform.position.y != (Position.y))
-        {
-            float timeSinceStarted = Time.time - timeStarted;
-            float percentageComplete = timeSinceStarted / TimeToTake;
-            _Piece.transform.position = new Vector3(_Piece.transform.position.x, Mathf.SmoothStep(_Piece.transform.position.y, Position.y, percentageComplete), _Piece.transform.position.z);
-            yield return new WaitForFixedUpdate();
-        }
-        isPaused = false;
+        StartCoroutine(MoveObject(_Piece, _Piece.transform.position, _Piece.transform.position + Vector3.up * 1.5f, 0.5f));
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(MoveObject(_Piece, _Piece.transform.position, Position + Vector3.up * 1.5f, 0.5f));
+        yield return new WaitForSeconds(0.5f);
+        StartCoroutine(MoveObject(_Piece, _Piece.transform.position, Position, 0.5f));
+        yield return new WaitForSeconds(0.5f);        
         StartCoroutine(SwitchCameraPosition());
+        
         yield return null;
     }
     IEnumerator SwitchCameraPosition()
@@ -454,10 +430,24 @@ public class ChessManager : MonoBehaviour
             float timeSinceStarted = Time.time - timeStarted;
             float percentageComplete = timeSinceStarted / TimeToTake;
 
-            _CameraAnchor.rotation = Quaternion.Lerp(_CameraAnchor.rotation, Quaternion.Euler(targetAngle), percentageComplete);
+            _CameraAnchor.rotation = Quaternion.RotateTowards(_CameraAnchor.rotation, Quaternion.Euler(targetAngle), 7.5f * percentageComplete);
+            Debug.Log(percentageComplete);
             yield return new WaitForFixedUpdate();
         }
-        
+        isPaused = false;
+        yield return null;
+    }
+    IEnumerator MoveObject(GameObject objectToMove, Vector3 startPosition,Vector3 endPosition,float timeToTake)
+    {
+        float timeStarted = Time.time;
+        while (objectToMove.transform.position != endPosition)
+        {
+            float timeSinceStarted = Time.time - timeStarted;
+            float percentageComplete = timeSinceStarted / timeToTake;
+            objectToMove.transform.position = Vector3.Lerp(objectToMove.transform.position, endPosition, percentageComplete);
+
+            yield return new WaitForFixedUpdate();
+        }
         yield return null;
     }
 }
